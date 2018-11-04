@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="http://localhost:5000/teamrosterinfo" method="POST">
+{{ form.hidden_tag() }}
+{{form.school_name.label}}
+{{form.school_name()}}
+{{form.submit()}}
+</form>
+{% endblock %}
