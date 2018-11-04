@@ -54,7 +54,7 @@ class Team(db.Model):
 ###################
 
 class TeamRosterForm(FlaskForm):
-    school_name = StringField('Enter the name of the school you would like to see a roster for:', validators=[Required()])
+    school_name = StringField('Enter the name of the school you would like to see a roster for (use team abbreviations listed here: https://www.reddit.com/r/CFB/wiki/abbreviations):', validators=[Required()])
     submit = SubmitField('Submit')
 
 class MascotForm(FlaskForm):
@@ -76,17 +76,22 @@ def teamrosterform():
 def teamrosterinfo():
     form = TeamRosterForm()
     school_name = form.school_name.data
-    base_url = "http://api.sportradar.us/ncaafb-t1/teams/" + str(school_name) + "/roster.json?api_key=" + api_key
-    response = requests.get(base_url)
-    text = response.text
-    python_obj = json.loads(text)
-    objects = python_obj
 
-    # return render_template('teamrosterinfo.html', objects=objects)
     team = db.session.query(Team).filter_by(school_name=school_name).first()
     if team:
-        pass
+        player_lst = []
+        all_players = Player.query.all()
+        for player in all_players:
+            if player.team_id == team.id:
+                player_lst.append(player)
+
+        return render_template('teamrosterinfo.html', players = player_lst)
     else:
+        base_url = "http://api.sportradar.us/ncaafb-t1/teams/" + str(school_name) + "/roster.json?api_key=" + api_key
+        response = requests.get(base_url)
+        text = response.text
+        python_obj = json.loads(text)
+        objects = python_obj
         team = Team(school_name=objects['id'], school_mascot=objects['name'])
         db.session.add(team)
         db.session.commit()
@@ -98,6 +103,16 @@ def teamrosterinfo():
             player = Player(first_name=player_first, last_name=player_last, position=player_position, team_id=team.id)
             db.session.add(player)
             db.session.commit()
+
+
+
+        player_lst = []
+        all_players = Player.query.all()
+        for player in all_players:
+            if player.team_id == team.id:
+                player_lst.append(player)
+
+        return render_template('teamrosterinfo.html', players = player_lst)
 
 
 
