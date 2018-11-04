@@ -81,10 +81,23 @@ def teamrosterinfo():
     text = response.text
     python_obj = json.loads(text)
     objects = python_obj
-    return render_template('teamrosterinfo.html', objects=objects)
 
+    # return render_template('teamrosterinfo.html', objects=objects)
+    team = db.session.query(Team).filter_by(school_name=school_name).first()
+    if team:
+        pass
+    else:
+        team = Team(school_name=objects['id'], school_mascot=objects['name'])
+        db.session.add(team)
+        db.session.commit()
 
-
+        for p in objects['players']:
+            player_first = p['name_first']
+            player_last = p['name_last']
+            player_position = p['position']
+            player = Player(first_name=player_first, last_name=player_last, position=player_position, team_id=team.id)
+            db.session.add(player)
+            db.session.commit()
 
 
 
@@ -92,6 +105,7 @@ def teamrosterinfo():
 ## Code to run the application...
 
 if __name__ == "__main__":
+    db.create_all()
     app.run(debug=True)
 
 # Put the code to do so here!
