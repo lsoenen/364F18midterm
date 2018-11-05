@@ -8,7 +8,7 @@ import os
 import json, requests
 from flask import Flask, render_template, session, redirect, url_for, flash, request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField# Note that you may need to import more here! Check out examples that do what you want to figure out what.
+from wtforms import StringField, SubmitField, ValidationError# Note that you may need to import more here! Check out examples that do what you want to figure out what.
 from wtforms.validators import Required, Length # Here, too
 from flask_sqlalchemy import SQLAlchemy
 ## App setup code
@@ -54,11 +54,11 @@ class Team(db.Model):
 ###################
 
 class TeamRosterForm(FlaskForm):
-    school_name = StringField('Enter the name of the school you would like to see a roster for (use team abbreviations listed here: https://www.reddit.com/r/CFB/wiki/abbreviations):', validators=[Required()])
+    school_name = StringField('Enter abbreviation of school you would like to see a roster for (use team abbreviations listed here: https://www.reddit.com/r/CFB/wiki/abbreviations):', validators=[Required()])
     submit = SubmitField('Submit')
 
 class MascotForm(FlaskForm):
-    school_mascot = StringField('Enter the mascot to see a list of all schools with that mascot:', validators=[Required()])
+    school_name = StringField('Enter abbreviation of school to see the school mascot:')
     submit = SubmitField('Submit')
 
 
@@ -66,6 +66,9 @@ class MascotForm(FlaskForm):
 ###### VIEW FXNS ######
 #######################
 
+@app.route('/home')
+def home():
+    return render_template('base.html')
 
 @app.route('/teamrosterform')
 def teamrosterform():
@@ -113,6 +116,14 @@ def teamrosterinfo():
                 player_lst.append(player)
 
         return render_template('teamrosterinfo.html', players = player_lst)
+    return render_template('404.html')
+#
+# @app.route('/mascotform')
+# def mascotform():
+#     form = MascotForm()
+#     return render_template('mascotform.html', form = form)
+
+
 
 
 
