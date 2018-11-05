@@ -61,6 +61,10 @@ class PositionForm(FlaskForm):
     position = StringField('Enter position to see all players of that position in the database (QB, WR, RB):', validators=[Required()])
     submit = SubmitField('Submit')
 
+    def validate_position(form, field):
+        if len(field.data) > 5:
+            raise ValidationError('Position abbreviation not found')
+
 
 #######################
 ###### VIEW FXNS ######
