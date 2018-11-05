@@ -54,11 +54,11 @@ class Team(db.Model):
 ###################
 
 class TeamRosterForm(FlaskForm):
-    school_name = StringField('Enter abbreviation of school you would like to see a roster for (use team abbreviations listed here: https://www.reddit.com/r/CFB/wiki/abbreviations):', validators=[Required()])
+    school_name = StringField('Enter abbreviation of school you would like to see a roster for (MICH, LSU, ND...use team abbreviations listed here: https://www.reddit.com/r/CFB/wiki/abbreviations):', validators=[Required()])
     submit = SubmitField('Submit')
 
-class MascotForm(FlaskForm):
-    school_name = StringField('Enter abbreviation of school to see the school mascot:')
+class PositionForm(FlaskForm):
+    position = StringField('Enter position to see all players of that position in the database (QB, WR, RB):', validators=[Required()])
     submit = SubmitField('Submit')
 
 
@@ -124,7 +124,27 @@ def teamrosterinfo():
 #     return render_template('mascotform.html', form = form)
 
 
+@app.route('/positionform', methods=['GET', 'POST'])
+def positionform():
+    form = PositionForm()
+    position = form.position.data
+    player_lst = []
+    all_players = Player.query.all()
+    for player in all_players:
+        if player.position == position:
+            player_lst.append(player)
 
+    return render_template('positionform.html', form=form, players=player_lst)
+
+# @app.route('/result', methods = ['GET', 'POST'])
+# def result():
+#     form = NameForm(request.form)
+#     if request.method == 'POST' and form.validate_on_submit():
+#         name = form.name.data
+#         age = form.age.data
+#         return "Your name is {0} and your age is {1}".format(name,age)
+#     flash('All fields are required!')
+#     return redirect(url_for('index'))
 
 
 

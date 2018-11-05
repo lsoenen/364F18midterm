@@ -3,10 +3,20 @@
 {% block content %}
 <form action = ' ' method="POST">
 {{ form.hidden_tag() }}
-{{form.school_name.label}}
+{{form.position.label}}
 <br>
-{{form.school_name()}}
+{{form.position()}}
 <br>
 {{form.submit()}}
 </form>
+
+{% for p in players %}
+
+ {{ p.first_name }} {{p.last_name}} {{p.position}}
+ <br>
+
+{% endfor %}
+
+
+
 {% endblock %}
